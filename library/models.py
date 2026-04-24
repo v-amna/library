@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 from django.db import models
 
 # Create your models here.
@@ -29,7 +31,7 @@ class Book(models.Model):
     book_name = models.CharField(max_length=200)
     author = models.ForeignKey(Author, on_delete=models.PROTECT, related_name="books")
     description = models.TextField(blank=True)
-    cover_img = models.ImageField(upload_to="book_covers/", null=True, blank=True)
+    cover_img = CloudinaryField('Image', null=True, blank=True)
     isbn = models.CharField(max_length=20, unique=True)
     language = models.CharField(max_length=50, blank=True)
     shelf_details = models.CharField(max_length=120, blank=True)

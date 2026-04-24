@@ -50,13 +50,12 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
-SOCIALACCOUNT_ADAPTER = "allauth.socialaccount.adapter.DefaultSocialAdapter"
+# SOCIALACCOUNT_ADAPTER = "allauth.socialaccount.adapter.DefaultSocialAccountAdapter"
 
 LOGIN_REDIRECT_URL = "/"
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
@@ -109,6 +108,7 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRES_DB_PASSWORD"),
         "HOST": os.environ.get("POSTGRES_DB_HOST"),
         "PORT": "5432",
+        'OPTIONS': {'sslmode': 'require'},
     }
 }
 
@@ -148,3 +148,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
