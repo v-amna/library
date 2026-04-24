@@ -9,6 +9,8 @@
     <nav>
         {% if user.is_authenticated %}
             <p>Welcome, {{ user.email }}</p>
+            <a href="{% url 'book_search' %}">Search Books</a>
+            <a href="{% url 'my_borrows' %}">My Borrows</a>
             <a href="{% url 'account_logout' %}">Logout</a>
         {% else %}
             <a href="{% url 'account_login' %}">Login</a>

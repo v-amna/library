@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>My Borrows</h1>
+
+{% if borrows %}
+    <ul>
+        {% for borrow in borrows %}
+            <li>
+                <h3>{{ borrow.book.book_name }}</h3>
+                <p>Author: {{ borrow.book.author.author_name }}</p>
+                <p>Borrowed on: {{ borrow.borrow_date }}</p>
+                <p>Due date: {{ borrow.return_date }}</p>
+
+                {% if borrow.return_date >= today %}
+                    <form method="post" action="{% url 'renew_borrow' borrow.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Renew</button>
+                    </form>
+                {% else %}
+                    <p><strong>Overdue</strong></p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no borrowed books.</p>
+{% endif %}
+{% endblock %}
