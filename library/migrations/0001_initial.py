@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
             name='Borrow',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('borrow_date', models.DateField(auto_now_add=True)),
+                ('issued_from', models.DateField(auto_now_add=True)),
                 ('return_date', models.DateField()),
                 ('duration_details', models.CharField(blank=True, max_length=120)),
                 ('book', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='borrows', to='library.book')),

@@ -43,13 +43,30 @@ class Book(models.Model):
     def __str__(self):
         return self.book_name
 
+    class Meta:
+        permissions = [
+            ("issue", "can issue the book to a user"),
+            ("return", "can return the book back to library"),
+            ("renew", "can renew the book"),
+        ]
+
+class BookManager(models.Manager):
+    """
+    Open borrow book requests from users
+    Any borrow request without an issuer is open.
+    """
+    def open_requests(self):
+        return super().get_queryset().filter(issued_by = None).order_by('created_at').reverse()
 
 class Borrow(models.Model):
     book = models.ForeignKey(Book, on_delete=models.PROTECT, related_name="borrows")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="borrows")
-    borrow_date = models.DateField(auto_now_add=True)
-    return_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    issued_from = models.DateField(default=None)
+    return_date = models.DateField(default=None)
     duration_details = models.CharField(max_length=120, blank=True)
+    issued_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="issued_by", default=None)
+    objects = BookManager()
 
     def __str__(self):
         return f"{self.user.username} -> {self.book.book_name}"

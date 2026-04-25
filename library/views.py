@@ -75,7 +75,7 @@ def my_borrows(request):
     borrows = (
         Borrow.objects.filter(user=request.user)
         .select_related("book", "book__author")
-        .order_by("-borrow_date")
+        .order_by("-issued_from")
     )
     today = timezone.localdate()
 

@@ -9,7 +9,7 @@
             <li>
                 <h3>{{ borrow.book.book_name }}</h3>
                 <p>Author: {{ borrow.book.author.author_name }}</p>
-                <p>Borrowed on: {{ borrow.borrow_date }}</p>
+                <p>Borrowed on: {{ borrow.issued_from }}</p>
                 <p>Due date: {{ borrow.return_date }}</p>
 
                 {% if borrow.return_date >= today %}
