@@ -36,7 +36,9 @@ def book_search(request):
         },
     )
 
-
+"""
+User borrow request for the staff to approve
+"""
 @login_required
 def borrow_book(request, book_id):
     if request.method != "POST":
@@ -59,11 +61,9 @@ def borrow_book(request, book_id):
         messages.error(request, "This book is currently unavailable.")
         return redirect("book_search")
 
-    due_date = today + timedelta(days=14)
     Borrow.objects.create(
         book=book,
         user=request.user,
-        return_date=due_date,
         duration_details="14 days",
     )
     messages.success(request, "Book borrowed successfully.")

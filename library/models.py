@@ -28,6 +28,8 @@ class Category(models.Model):
     def __str__(self):
         return self.category_name
 
+    class Meta:
+        verbose_name_plural = "Categories"
 
 class Book(models.Model):
     book_name = models.CharField(max_length=200)
@@ -39,6 +41,8 @@ class Book(models.Model):
     shelf_details = models.CharField(max_length=120, blank=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="books")
     is_active = models.BooleanField(default=True)
+    stock = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.book_name
@@ -62,10 +66,10 @@ class Borrow(models.Model):
     book = models.ForeignKey(Book, on_delete=models.PROTECT, related_name="borrows")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="borrows")
     created_at = models.DateTimeField(auto_now_add=True)
-    issued_from = models.DateField(default=None)
-    return_date = models.DateField(default=None)
+    issued_from = models.DateField(default=None, null=True)
+    return_date = models.DateField(default=None, null=True)
     duration_details = models.CharField(max_length=120, blank=True)
-    issued_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="issued_by", default=None)
+    issued_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="issued_by", default=None, null=True)
     objects = BookManager()
 
     def __str__(self):
