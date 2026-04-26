@@ -157,3 +157,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Default book borrow duration in days
 DEFAULT_BOOK_BORROW_DURATION = 14
+
+# Default pagination limit
+DEFAULT_PAGINATION_LIMIT = 3

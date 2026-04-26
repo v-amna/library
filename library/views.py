@@ -1,10 +1,11 @@
-from datetime import timedelta
+from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from config import settings
 from .models import Book, Borrow
 
 
@@ -13,6 +14,11 @@ def book_search(request):
     q = request.GET.get("q", "").strip()
 
     books = Book.objects.filter(is_active=True).select_related("author", "category")
+
+    paginator = Paginator(books, settings.DEFAULT_PAGINATION_LIMIT)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     if q:
         books = books.filter(
             Q(book_name__icontains=q)
@@ -30,15 +36,18 @@ def book_search(request):
         request,
         "library/book_search.html",
         {
-            "books": books,
             "q": q,
             "unavailable_book_ids": unavailable_book_ids,
+            "page_obj": page_obj,
         },
     )
+
 
 """
 User borrow request for the staff to approve
 """
+
+
 @login_required
 def borrow_book(request, book_id):
     if request.method != "POST":
@@ -47,7 +56,7 @@ def borrow_book(request, book_id):
     book = get_object_or_404(Book, id=book_id, is_active=True)
     today = timezone.localdate()
 
-    if  Borrow.objects.is_borrowed_by_user(user=request.user, book=book):
+    if Borrow.objects.is_borrowed_by_user(user=request.user, book=book):
         messages.warning(request, "You already borrowed this book.")
         return redirect("book_search")
 
@@ -71,12 +80,19 @@ def my_borrows(request):
         .select_related("book", "book__author")
         .order_by("-issued_from")
     )
+
+    paginator = Paginator(borrows, settings.DEFAULT_PAGINATION_LIMIT)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     today = timezone.localdate()
 
     return render(
         request,
         "library/my_borrows.html",
-        {"borrows": borrows, "today": today},
+        {
+          "today": today,
+          "page_obj": page_obj,
+        },
     )
 
 
