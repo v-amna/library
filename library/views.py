@@ -47,12 +47,7 @@ def borrow_book(request, book_id):
     book = get_object_or_404(Book, id=book_id, is_active=True)
     today = timezone.localdate()
 
-    already_borrowed = Borrow.objects.filter(
-        user=request.user,
-        book=book,
-        return_date__gte=today,
-    ).exists()
-    if already_borrowed:
+    if  Borrow.objects.is_borrowed_by_user(user=request.user, book=book):
         messages.warning(request, "You already borrowed this book.")
         return redirect("book_search")
 
@@ -64,9 +59,8 @@ def borrow_book(request, book_id):
     Borrow.objects.create(
         book=book,
         user=request.user,
-        duration_details="14 days",
     )
-    messages.success(request, "Book borrowed successfully.")
+    messages.success(request, "Book borrow requested place, Please reach to any staff.")
     return redirect("my_borrows")
 
 
@@ -102,8 +96,7 @@ def renew_borrow(request, borrow_id):
         messages.warning(request, "This borrow has already been renewed once.")
         return redirect("my_borrows")
 
-    borrow.return_date = borrow.return_date + timedelta(days=7)
-    borrow.duration_details = "14 days + renewed_once"
+    # TODO: Fix this logic
     borrow.save(update_fields=["return_date", "duration_details"])
 
     messages.success(request, "Renewed for 7 more days.")
