@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from cloudinary.models import CloudinaryField
 from django.db import models
 
+# default book borrow duration in days
+DEFAULT_BOOK_BORROW_DURATION = settings.DEFAULT_BOOK_BORROW_DURATION
+
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -45,14 +48,7 @@ class Book(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.book_name
-
-    class Meta:
-        permissions = [
-            ("issue", "can issue the book to a user"),
-            ("return", "can return the book back to library"),
-            ("renew", "can renew the book"),
-        ]
+        return f"{self.book_name}"
 
 class BookManager(models.Manager):
     """
@@ -63,14 +59,32 @@ class BookManager(models.Manager):
         return super().get_queryset().filter(issued_by = None).order_by('created_at').reverse()
 
 class Borrow(models.Model):
+    class Status(models.TextChoices):
+        OPEN     = "OP", "Open Request"
+        ISSUED   = "IS", "Issued"
+        RENEWED  = "RE", "Renewed"
+        REJECTED = "RJ", "Rejected"
+        RETURNED = "RT", "Returned"
+        OVERDUE = "OD", "Overdue"
+
     book = models.ForeignKey(Book, on_delete=models.PROTECT, related_name="borrows")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="borrows")
     created_at = models.DateTimeField(auto_now_add=True)
     issued_from = models.DateField(default=None, null=True)
     return_date = models.DateField(default=None, null=True)
-    duration_details = models.CharField(max_length=120, blank=True)
+    notes = models.CharField(max_length=120, blank=True)
     issued_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="issued_by", default=None, null=True)
+    status = models.CharField( max_length=2, choices=Status,default=Status.OPEN)
+
+    # TODO: Remove this manager
     objects = BookManager()
+
+    class Meta:
+        permissions = [
+            ("issue_borrow", "can borrow the book to a user"),
+            ("return_borrow", "can return the book back to library from borrow"),
+            ("renew_borrow", "can renew the book borrow"),
+        ]
 
     def __str__(self):
         return f"{self.user.username} -> {self.book.book_name}"
