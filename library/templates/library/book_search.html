@@ -1,34 +1,57 @@
 {% extends "base.html" %}
 
-{% block content %}
-<h1>Search Books</h1>
+{% block title %}Search Books - Library Management System{% endblock %}
 
-<form method="get">
-    <input type="text" name="q" value="{{ q }}" placeholder="Search by title, author, ISBN, or category">
-    <button type="submit">Search</button>
-</form>
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="h2">Search Books</h1>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-9">
+                <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search by title, author, ISBN, or category">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 {% if books %}
-    <ul>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
         {% for book in books %}
-            <li>
-                <h3>{{ book.book_name }}</h3>
-                <p>Author: {{ book.author.author_name }}</p>
-                <p>Category: {{ book.category.category_name }}</p>
-                <p>ISBN: {{ book.isbn }}</p>
-
-                {% if book.id in unavailable_book_ids %}
-                    <p>Currently unavailable</p>
-                {% else %}
-                    <form method="post" action="{% url 'borrow_book' book.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Borrow</button>
-                    </form>
-                {% endif %}
-            </li>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.book_name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ book.author.author_name }}</h6>
+                        <p class="card-text">
+                            <strong>Category:</strong> {{ book.category.category_name }}<br>
+                            <strong>ISBN:</strong> {{ book.isbn }}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                        {% if book.id in unavailable_book_ids %}
+                            <button class="btn btn-secondary w-100" disabled>Currently unavailable</button>
+                        {% else %}
+                            <form method="post" action="{% url 'borrow_book' book.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success w-100">Borrow</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+    </div>
 {% else %}
-    <p>No books found.</p>
+    <div class="alert alert-info">
+        No books found.
+    </div>
 {% endif %}
 {% endblock %}
