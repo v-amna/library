@@ -14,24 +14,32 @@
         {% for borrow in borrows %}
             <div class="col">
                 <div class="card h-100">
+                    <img src="{{ borrow.book.cover_img.url }}" alt="Book Cover image" class="card image cap">
                     <div class="card-body">
                         <h5 class="card-title">{{ borrow.book.book_name }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ borrow.book.author.author_name }}</h6>
                         <p class="card-text">
+                            <strong>Requested on:</strong> {{ borrow.created_at }}<br>
                             <strong>Borrowed on:</strong> {{ borrow.issued_from }}<br>
+                            {% if borrow.status == borrow.Status.returned.value %}
+                            <strong>Returned on:</strong> {{ borrow.return_date }}
+                            {% else %}
                             <strong>Due date:</strong> {{ borrow.return_date }}
+                            {% endif %}
                         </p>
                     </div>
                     <div class="card-footer bg-transparent border-top-0">
-                        {% if borrow.return_date >= today %}
+                        {% if borrow.status == borrow.Status.issued.value %}
                             <form method="post" action="{% url 'renew_borrow' borrow.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-outline-primary w-100">Request renew</button>
                             </form>
                         {% else %}
-                            <div class="alert alert-warning mb-0 p-2 text-center">
-                                <strong>{% if borrow.issued_from is null %} Waiting Approval {% else %}Overdue {% endif %}</strong>
-                            </div>
+                            {% if borrow.status == borrow.Status.overdue.value %}
+                                <div class="alert alert-danger mb-0 p-2 text-center"> {{ borrow.return_date | timesince }} {{ borrow.get_status_display | lower }} </div>
+                            {% else %}
+                                <div class="alert alert-warning mb-0 p-2 text-center"> {{ borrow.get_status_display }} </div>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
