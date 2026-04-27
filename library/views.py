@@ -27,9 +27,14 @@ def book_search(request):
             | Q(category__category_name__icontains=q)
         )
 
-    today = timezone.localdate()
+    paginator = Paginator(books, settings.DEFAULT_PAGINATION_LIMIT)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # Mark all books with stock less than 0 as unavailable.
+    # To borrow.
     unavailable_book_ids = set(
-        Borrow.objects.filter(return_date__gte=today).values_list("book_id", flat=True)
+        Book.objects.filter(is_active=True,stock__lt=0).values_list("id", flat=True)
     )
 
     return render(
@@ -60,9 +65,14 @@ def borrow_book(request, book_id):
         messages.warning(request, "You already borrowed this book.")
         return redirect("book_search")
 
-    book_unavailable = Borrow.objects.filter(book=book, return_date__gte=today).exists()
-    if book_unavailable:
-        messages.error(request, "This book is currently unavailable.")
+    # Check if the total number of books borrowed is greater than or equal to the stock
+    active_borrow_count = Borrow.objects.filter(
+        book=book,
+        return_date__gte=today,
+        book__is_active=True).exclude( status__in=[Borrow.Status.returned,Borrow.Status.rejected]).count()
+
+    if active_borrow_count >= book.stock:
+        messages.error(request, "Sorry, This book is no more available.")
         return redirect("book_search")
 
     Borrow.objects.create(
@@ -108,12 +118,12 @@ def renew_borrow(request, borrow_id):
         messages.error(request, "Overdue books cannot be renewed from this page.")
         return redirect("my_borrows")
 
-    if "renewed_once" in (borrow.duration_details or ""):
+    if "renewed_once" in (borrow.notes or ""):
         messages.warning(request, "This borrow has already been renewed once.")
         return redirect("my_borrows")
 
     # TODO: Fix this logic
-    borrow.save(update_fields=["return_date", "duration_details"])
+    borrow.save(update_fields=["return_date", "notes"])
 
     messages.success(request, "Renewed for 7 more days.")
     return redirect("my_borrows")
