@@ -2,15 +2,32 @@ from datetime import timedelta
 
 from django.contrib.auth import get_permission_codename
 from django.utils import timezone
-
 from django.contrib import admin
+
 from .models import Author, Book, Borrow, Category, Profile,DEFAULT_BOOK_BORROW_DURATION
 
 # Register your models here.
 admin.site.register(Profile)
-admin.site.register(Author)
-admin.site.register(Category)
 
+class BookInline(admin.TabularInline):
+    model = Book
+
+class CategoryInline(admin.TabularInline):
+    model = Category
+
+class AuthorInline(admin.TabularInline):
+    model = Author
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    search_fields = ['category_name']
+    inlines = [BookInline]
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+    search_fields = ['author_name']
+    inlines = [BookInline]
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
