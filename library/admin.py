@@ -10,8 +10,14 @@ from .models import Author, Book, Borrow, Category, Profile,DEFAULT_BOOK_BORROW_
 admin.site.register(Profile)
 admin.site.register(Author)
 admin.site.register(Category)
-admin.site.register(Book)
 
+
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('book_name', 'isbn', 'author', 'stock', 'shelf_details', 'category', 'is_active')
+    search_fields = [ 'book_name', 'isbn','author']
+    ordering = ['book_name', 'isbn','author','stock']
+    list_filter = ['stock', 'category', 'is_active','shelf_details']
 
 # TODO:
 #  - Add button renew,issue on borrow changeAction
