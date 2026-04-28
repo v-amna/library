@@ -101,5 +101,23 @@ class Borrow(models.Model):
 
     objects = BorrowManager()
 
+    def save(self, *args, **kwargs):
+        """
+        Custom save method to set the stock of the book
+        when the borrow is approved/book is returned.
+        """
+        if self.pk:
+            old_status = Borrow.objects.get(pk=self.pk).status
+            # Increase the stock on borrow return
+            if old_status == self.Status.issued and self.status == self.Status.returned:
+                self.book.stock += 1
+                self.book.save()
+            # Decrease the stock on borrow approval
+            elif old_status == self.Status.open and self.status == self.Status.issued:
+                self.book.stock -= 1
+                self.book.save()
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.user.username} -> {self.book.book_name}"

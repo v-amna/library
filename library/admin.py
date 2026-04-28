@@ -33,12 +33,20 @@ class BorrowAdmin(admin.ModelAdmin):
         issued_from, and return_date fields for the selected borrow records.
         The staff will hand over the book to the user after approval.
         """
-        queryset.update(
-            issued_by=request.user,
-            issued_from=timezone.now(),
-            return_date=timezone.now() + timedelta(days=DEFAULT_BOOK_BORROW_DURATION),
-        )
-        self.message_user(request, "Books issued successfully.")
+
+        # Loop over selected Borrow instances and save each one so
+        # instance-level logic save overrides runs correctly.
+        count = 0
+        now = timezone.now()
+        for borrow in queryset:
+            borrow.issued_by = request.user
+            borrow.issued_from = now
+            borrow.return_date = now + timedelta(days=DEFAULT_BOOK_BORROW_DURATION)
+            borrow.status = borrow.Status.issued
+            borrow.save()
+            count += 1
+
+        self.message_user(request, f"Books issued successfully ({count} record(s)).")
 
     def has_issue_permission(self, request):
         """
