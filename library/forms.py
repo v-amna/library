@@ -18,7 +18,6 @@ class BorrowForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get('instance')
-        # TODO: Add default value for return date
         initial = {}
 
         # If borrow is open status add, issue_from and return_date
