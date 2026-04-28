@@ -153,6 +153,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom settings for the library app
 
 # Default book borrow duration in days
 DEFAULT_BOOK_BORROW_DURATION = 14
