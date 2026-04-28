@@ -39,12 +39,31 @@ class AuthorAdmin(admin.ModelAdmin):
     search_fields = ['author_name']
     inlines = [BookInline]
 
+
+class BookListFilter(admin.SimpleListFilter):
+    title = 'Stock status'
+    parameter_name = 'stock'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('0', 'Out of stock'),
+            ('1', 'In stock'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == '0':
+            return queryset.filter(stock=0)
+        elif self.value() == '1':
+            return queryset.filter(stock__gt=0)
+
+
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('book_name', 'isbn', 'author', 'stock', 'shelf_details', 'category', 'is_active')
-    search_fields = [ 'book_name', 'isbn','author']
-    ordering = ['book_name', 'isbn','author','stock']
-    list_filter = ['stock', 'category', 'is_active','shelf_details']
+    list_display = ('id', 'book_name', 'isbn', 'author', 'stock', 'shelf_details', 'category',
+                    'is_active')
+    search_fields = ['book_name', 'isbn', 'author']
+    ordering = ['book_name', 'isbn', 'author', 'stock']
+    list_filter = [BookListFilter, 'category', 'is_active', 'shelf_details']
 
 # TODO:
 #  - Add button renew,issue on borrow changeAction
