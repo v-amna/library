@@ -4,19 +4,29 @@ from django.contrib.auth import get_permission_codename
 from django.utils import timezone
 from django.contrib import admin
 
-from .models import Author, Book, Borrow, Category, Profile,DEFAULT_BOOK_BORROW_DURATION
+from .models import Author, Book, Borrow, Category, Profile, DEFAULT_BOOK_BORROW_DURATION
+from .forms import BorrowForm
+
+# Admin UI customization
+admin.site.site_header = "Library Management System"
+admin.site.site_title = "Library Management System Admin"
+admin.site.index_title = "Welcome to Library Management System"
 
 # Register your models here.
 admin.site.register(Profile)
 
+
 class BookInline(admin.TabularInline):
     model = Book
+
 
 class CategoryInline(admin.TabularInline):
     model = Category
 
+
 class AuthorInline(admin.TabularInline):
     model = Author
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
