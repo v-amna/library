@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ["localhost",
 # Application definition
 
 INSTALLED_APPS = [
+    'widget_tweaks',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +44,6 @@ INSTALLED_APPS = [
     'library',
     'allauth',
     'allauth.account',
-    # 'allauth.socialaccount',
 ]
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

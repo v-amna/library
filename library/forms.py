@@ -40,7 +40,6 @@ class CustomSignupForm(forms.Form):
     phone_number = forms.CharField(required=False, max_length=20)
 
     def signup(self, request, user):
-        # user = super().save(request)
         Profile.objects.update_or_create(
             user=user,
             defaults={

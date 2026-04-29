@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 mt-3 offset-md-2">
+      <h3>{% trans "Sign Up" %}</h3>
+
+      <p>{% blocktrans %}
+        Welcome back to the code|star blog.
+        Do you already have an account? Then please
+        <a class="link" href="{{ login_url }}">sign in</a>
+        instead.
+      {% endblocktrans %}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8 mt-3 offset-md-2">
+      {% for err in form.non_field_errors %}<div role="alert" class="alert alert-danger">{{ err }}</div>{% endfor %}
+      <form class="signup" id="signup_form" method="post"
+        action="{% url 'account_signup' %}">
+        {% csrf_token %}
+      {% for field in form %}
+          <div class="mb-3">
+              {% for error in field.errors %}
+                  <p class="text-danger">{{ error }}</p>
+              {% endfor %}
+              {% if field.widget_type == "checkbox" or field.widget_type == "radio" %}
+                  <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field  | add_class:"form-check-input" }}
+              {% else %}
+                  <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                  {{ field |add_class:"form-control" }}
+              {% endif %}
+          </div>
+      {% endfor %}
+        {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}"
+          value="{{ redirect_field_value }}" />
+        {% endif %}
+        <button class="btn btn-primary" type="submit"> {% trans "Sign Up" %} </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

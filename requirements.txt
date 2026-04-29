@@ -6,6 +6,7 @@ cloudinary==1.36.0
 dj3-cloudinary-storage==0.0.6
 Django==5.2.13
 django-allauth==65.16.1
+django-widget-tweaks==1.5.1
 gunicorn==25.3.0
 idna==3.13
 load-dotenv==0.1.0

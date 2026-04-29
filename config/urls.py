@@ -18,8 +18,6 @@ from django.contrib import admin
 from django.urls import path,include
 from django.views.generic import TemplateView
 
-from . import settings
-
 # Admin UI customization
 admin.site.site_header = "Library Management System"
 admin.site.site_title = "Library Management System Admin"
@@ -30,5 +28,4 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("library/", include("library.urls")),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    
 ]
