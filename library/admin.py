@@ -15,14 +15,6 @@ class BookInline(admin.TabularInline):
     model = Book
 
 
-class CategoryInline(admin.TabularInline):
-    model = Category
-
-
-class AuthorInline(admin.TabularInline):
-    model = Author
-
-
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['category_name']
@@ -56,8 +48,8 @@ class BookListFilter(admin.SimpleListFilter):
 class BookAdmin(admin.ModelAdmin):
     list_display = ('id', 'book_name', 'isbn', 'author', 'stock', 'shelf_details', 'category',
                     'is_active')
-    search_fields = ['book_name', 'isbn', 'author']
-    ordering = ['book_name', 'isbn', 'author', 'stock']
+    search_fields = ['book_name', 'isbn', 'author__author_name']
+    ordering = ['book_name', 'isbn', 'author__author_name', 'stock']
     list_filter = [BookListFilter, 'category', 'is_active', 'shelf_details']
 
 
