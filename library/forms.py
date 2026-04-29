@@ -36,7 +36,12 @@ class CustomSignupForm(forms.Form):
         required=False,
         widget=forms.DateInput(attrs={"type": "date"})
     )
-    address = forms.CharField(required=False, max_length=255)
+    address = forms.CharField(required=False,
+                              max_length=255,
+                              widget=forms.Textarea(attrs={
+                                  "rows": 3,
+                                  "placeholder": "Enter your address"
+                              }))
     phone_number = forms.CharField(required=False, max_length=20)
 
     def signup(self, request, user):
