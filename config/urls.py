@@ -18,6 +18,14 @@ from django.contrib import admin
 from django.urls import path,include
 from django.views.generic import TemplateView
 
+from . import settings
+
+# Admin UI customization
+admin.site.site_header = "Library Management System"
+admin.site.site_title = "Library Management System Admin"
+admin.site.index_title = "Welcome to Library Management System"
+admin.site.site_url = settings.ADMIN_SITE_URL
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("allauth.urls")),
