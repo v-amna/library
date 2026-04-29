@@ -2,6 +2,8 @@
 
 {% block title %}Search Books - Library Management System{% endblock %}
 
+{% load cloudinary %}
+
 {% block content %}
 <div class="row mb-4">
     <div class="col">
@@ -27,7 +29,7 @@
         {% for book in page_obj %}
             <div class="col">
                 <div class="card shadow-sm h-100">
-                    <img src="{{ book.cover_img.url }}" alt="Book Cover image" class="card image cap">
+                    {% cloudinary book.cover_img secure=True format="jpg" alt="Book cover image" class="card image cap" %}
                     <div class="card-body">
                         <h5 class="card-title">{{ book.book_name }}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{ book.author.author_name }}</h6>
