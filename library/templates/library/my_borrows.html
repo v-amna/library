@@ -15,7 +15,7 @@
             {% for borrow in page_obj %}
                 <div class="col">
                     <div class="card h-100">
-                        {% cloudinary book.cover_img secure=True format="jpg" alt="Book cover image" class="card image cap" %}
+                        {% cloudinary borrow.book.cover_img secure=True format="jpg" alt="Book cover image" class="card image cap" %}
                         <div class="card-body">
                             <h5 class="card-title">{{ borrow.book.book_name }}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ borrow.book.author.author_name }}</h6>
