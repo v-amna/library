@@ -30,7 +30,7 @@
                 </div>
                 <div class="col-md-8 col-sm-6">
                     <div class="card-body">
-                        <h5 class="card-title">{{ book.book_name | truncatechars:50 }}</h5>
+                        <h3 class="card-title">{{ book.book_name | truncatechars:50 }}</h3>
                         <p class="card-text"> {{ book.description | truncatechars:300 }}</p>
                         <p class="card-text"><small class="text-muted">{{ book.created_at | timesince }} ago</small></p>
                     </div>
