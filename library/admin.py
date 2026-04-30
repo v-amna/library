@@ -8,37 +8,52 @@ from .models import Author, Book, Borrow, Category, Profile, \
     DEFAULT_BOOK_BORROW_DURATION
 from .forms import BorrowForm
 
-# Register your models here.
+# Simple model registration
 admin.site.register(Profile)
 
 
 class BookInline(admin.TabularInline):
+    """
+    Inline representation for Books within Category or Author admin pages.
+    """
     model = Book
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
+    """ Admin configuration for the Category model. """
     search_fields = ['category_name']
     inlines = [BookInline]
 
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
+    """ Admin configuration for the Author model. """
     search_fields = ['author_name']
     inlines = [BookInline]
 
 
 class BookListFilter(admin.SimpleListFilter):
+    """
+    Custom filter for filtering books based on their stock availability.
+    """
     title = 'Stock status'
     parameter_name = 'stock'
 
     def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples representing the filter options.
+        """
         return (
             ('0', 'Out of stock'),
             ('1', 'In stock'),
         )
 
     def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the selected value.
+        Here 0 means out of stock and 1 means in stock.
+        """
         if self.value() == '0':
             return queryset.filter(stock=0)
         elif self.value() == '1':
@@ -47,6 +62,9 @@ class BookListFilter(admin.SimpleListFilter):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
+    """
+    Admin configuration for the Book model.
+    """
     list_display = ('id', 'book_name', 'isbn', 'author', 'stock',
                     'shelf_details', 'category',
                     'is_active')
@@ -57,6 +75,9 @@ class BookAdmin(admin.ModelAdmin):
 
 @admin.register(Borrow)
 class BorrowAdmin(admin.ModelAdmin):
+    """
+    Admin configuration for the Borrow model.
+    """
     list_display = ('id', 'created_at', 'user', 'status', 'book__isbn',
                     'book__book_name', 'book__stock', 'issued_from',
                     'return_date', 'notes')
@@ -73,6 +94,7 @@ class BorrowAdmin(admin.ModelAdmin):
         description='Issue books to user')
     def make_approve_borrow(self, request, queryset):
         """
+        Admin action to approve borrow requests.
         Staff can approve the borrow request, which will set the issued_by,
         issued_from, and return_date fields for the selected borrow records.
         The staff will hand over the book to the user after approval.
@@ -104,6 +126,7 @@ class BorrowAdmin(admin.ModelAdmin):
     )
     def make_renew_borrow(self, request, queryset):
         """
+        Admin action to renew books.
         Staff can renew the borrowed book. This will update the return_date
         field for the selected borrow records to the default duration in
         the settings
@@ -134,6 +157,7 @@ class BorrowAdmin(admin.ModelAdmin):
     )
     def make_return_borrow(self, request, queryset):
         """
+        Admin action to return books.
         Staff can return the borrowed book. This will update the return_date
         to today's date and set the status to returned for the selected borrow
         records.
@@ -157,7 +181,7 @@ class BorrowAdmin(admin.ModelAdmin):
 
     def has_issue_permission(self, request):
         """
-        Check if use has permission to issue books.
+        Check if the user has permission to issue books.
         """
         opts = self.opts
         codename = get_permission_codename('issue', opts)
@@ -165,7 +189,7 @@ class BorrowAdmin(admin.ModelAdmin):
 
     def has_renew_permission(self, request):
         """
-        Check if use has permission to renew books.
+        Check if the user has permission to renew books.
         """
         opts = self.opts
         codename = get_permission_codename('renew', opts)
@@ -173,7 +197,7 @@ class BorrowAdmin(admin.ModelAdmin):
 
     def has_return_permission(self, request):
         """
-        Check if use has permission to return books.
+        Check if the user has permission to return books.
         """
         opts = self.opts
         codename = get_permission_codename('return', opts)
