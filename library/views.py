@@ -15,7 +15,8 @@ from .models import Book, Borrow
 def book_search(request):
     q = request.GET.get("q", "").strip()
 
-    books = Book.objects.filter(is_active=True).select_related("author", "category")
+    books = Book.objects.filter(is_active=True).select_related(
+        "author", "category")
 
     paginator = Paginator(books, settings.DEFAULT_PAGINATION_LIMIT)
     page_number = request.GET.get("page")
@@ -36,7 +37,8 @@ def book_search(request):
     # Mark all books with stock less than 0 as unavailable.
     # To borrow.
     unavailable_book_ids = set(
-        Book.objects.filter(is_active=True,stock__lt=0).values_list("id", flat=True)
+        Book.objects.filter(is_active=True, stock__lt=0).values_list(
+            "id", flat=True)
     )
 
     return render(
@@ -61,25 +63,32 @@ def borrow_book(request, book_id):
     book = get_object_or_404(Book, id=book_id, is_active=True)
     today = timezone.localdate()
 
-    if Borrow.objects.is_borrowed_by_user(user=request.user, book=book):
+    if Borrow.objects.is_borrowed_by_user(user=request.user,
+                                          book=book):
         messages.warning(request, "You already borrowed this book.")
         return redirect("book_search")
 
-    # Check if the total number of books borrowed is greater than or equal to the stock
+    # Check if the total number of books borrowed is greater than
+    # or equal to the stock
     active_borrow_count = Borrow.objects.filter(
         book=book,
         return_date__gte=today,
-        book__is_active=True).exclude( status__in=[Borrow.Status.returned,Borrow.Status.rejected]).count()
+        book__is_active=True).exclude(
+        status__in=[Borrow.Status.returned,
+                    Borrow.Status.rejected]).count()
 
     if active_borrow_count >= book.stock:
-        messages.error(request, "Sorry, This book is no more available.")
+        messages.error(request,
+                       "Sorry, This book is no more available.")
         return redirect("book_search")
 
     Borrow.objects.create(
         book=book,
         user=request.user,
     )
-    messages.success(request, "Book borrow requested place, Please reach to any staff.")
+    messages.success(request,
+                     "Book borrow requested place, " +
+                     "Please reach to any staff.")
     return redirect("my_borrows")
 
 
@@ -100,8 +109,8 @@ def my_borrows(request):
         request,
         "library/my_borrows.html",
         {
-          "today": today,
-          "page_obj": page_obj,
+            "today": today,
+            "page_obj": page_obj,
         },
     )
 
@@ -111,15 +120,19 @@ def renew_borrow(request, borrow_id):
     if request.method != "POST":
         return redirect("my_borrows")
 
-    borrow = get_object_or_404(Borrow, id=borrow_id, user=request.user)
+    borrow = get_object_or_404(Borrow, id=borrow_id,
+                               user=request.user)
     today = timezone.localdate()
 
     if borrow.return_date < today:
-        messages.error(request, "Overdue books cannot be renewed from this page.")
+        messages.error(request,
+                       "Overdue books cannot be renewed " +
+                       "from this page.")
         return redirect("my_borrows")
 
     if "renewed_once" in (borrow.notes or ""):
-        messages.warning(request, "This borrow has already been renewed once.")
+        messages.warning(request,
+                         "This borrow has already been renewed once.")
         return redirect("my_borrows")
 
     # TODO: Fix this logic
@@ -132,7 +145,9 @@ def renew_borrow(request, borrow_id):
 def check_username(request):
     username = request.GET.get("username", None)
     if not username:
-        return JsonResponse({"available": False, "error": "Username not provided"}, status=400)
+        return JsonResponse(
+            {"available": False, "error": "Username not provided"},
+            status=400)
 
     exists = User.objects.filter(username__iexact=username).exists()
     return JsonResponse({"available": not exists})

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('library', '0003_book_created_at_book_stock'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -16,7 +15,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='borrow',
             name='issued_by',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='issued_by', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(default=None, null=True,
+                                    on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='issued_by',
+                                    to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='borrow',

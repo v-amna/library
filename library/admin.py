@@ -4,7 +4,8 @@ from django.contrib.auth import get_permission_codename
 from django.utils import timezone
 from django.contrib import admin
 
-from .models import Author, Book, Borrow, Category, Profile, DEFAULT_BOOK_BORROW_DURATION
+from .models import Author, Book, Borrow, Category, Profile, \
+    DEFAULT_BOOK_BORROW_DURATION
 from .forms import BorrowForm
 
 # Register your models here.
@@ -46,7 +47,8 @@ class BookListFilter(admin.SimpleListFilter):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('id', 'book_name', 'isbn', 'author', 'stock', 'shelf_details', 'category',
+    list_display = ('id', 'book_name', 'isbn', 'author', 'stock',
+                    'shelf_details', 'category',
                     'is_active')
     search_fields = ['book_name', 'isbn', 'author__author_name']
     ordering = ['book_name', 'isbn', 'author__author_name', 'stock']
@@ -55,11 +57,13 @@ class BookAdmin(admin.ModelAdmin):
 
 @admin.register(Borrow)
 class BorrowAdmin(admin.ModelAdmin):
-    list_display = ('id','created_at', 'user', 'status', 'book__isbn', 'book__book_name', 'book__stock', 'issued_from',
+    list_display = ('id', 'created_at', 'user', 'status', 'book__isbn',
+                    'book__book_name', 'book__stock', 'issued_from',
                     'return_date', 'notes')
     readonly_fields = ('created_at', 'issued_by')
     ordering = ["created_at"]
-    actions = ['make_approve_borrow','make_renew_borrow', 'make_return_borrow' ]
+    actions = ['make_approve_borrow', 'make_renew_borrow',
+               'make_return_borrow']
     search_fields = ['user__username', 'book__book_name', 'book__isbn']
     list_filter = ['status', 'issued_from', 'return_date']
     form = BorrowForm
@@ -80,16 +84,19 @@ class BorrowAdmin(admin.ModelAdmin):
         now = timezone.now()
         for borrow in queryset:
             if borrow.status != borrow.Status.open:
-                message = f"Borrow id: {borrow.id} could not be issued due to status: {borrow.get_status_display()}"
+                message = (f"Borrow id: {borrow.id} could not be issued due to"
+                           + f"status: {borrow.get_status_display()}")
                 self.message_user(request, message, level='warning')
                 return
             borrow.issued_by = request.user
             borrow.issued_from = now
-            borrow.return_date = now + timedelta(days=DEFAULT_BOOK_BORROW_DURATION)
+            borrow.return_date = now + timedelta(
+                days=DEFAULT_BOOK_BORROW_DURATION)
             borrow.status = borrow.Status.issued
             borrow.save()
             count += 1
-        self.message_user(request, f"Books issued successfully ({count} record(s))")
+        self.message_user(request,
+                          f"Books issued successfully ({count} record(s))")
 
     @admin.action(
         permissions=['renew'],
@@ -97,23 +104,29 @@ class BorrowAdmin(admin.ModelAdmin):
     )
     def make_renew_borrow(self, request, queryset):
         """
-        Staff can renew the borrowed book. This will update the return_date field for the selected borrow records
-        to the default duration in the settings
+        Staff can renew the borrowed book. This will update the return_date
+        field for the selected borrow records to the default duration in
+        the settings
         """
         count = 0
         now = timezone.now()
         for borrow in queryset:
-            if borrow.status not in [borrow.Status.issued, borrow.Status.renewed]:
-                message = f"Borrow id: {borrow.id} could not be renewed due to status: {borrow.get_status_display()}"
+            if borrow.status not in [borrow.Status.issued,
+                                     borrow.Status.renewed]:
+                message = (f"Borrow id: {borrow.id} could not be renewed due"
+                           + f"to status: {borrow.get_status_display()}")
                 self.message_user(request, message, level='warning')
                 return
-            borrow.return_date = now + timedelta(days=DEFAULT_BOOK_BORROW_DURATION)
+            borrow.return_date = now + timedelta(
+                days=DEFAULT_BOOK_BORROW_DURATION)
             borrow.status = borrow.Status.renewed
-            borrow.notes = f"{borrow.notes}, renewed on: {now} by {request.user}" if borrow.notes else f"renewed on: {now} by {request.user}"
+            borrow.notes += (", " if borrow.notes else "") + (
+                f"renewed on: {now} by {request.user}")
             borrow.save()
             count += 1
 
-        self.message_user(request, f"Books renewed successfully ({count} record(s)).")
+        self.message_user(request,
+                          f"Books renewed successfully ({count} record(s)).")
 
     @admin.action(
         permissions=['return'],
@@ -121,13 +134,17 @@ class BorrowAdmin(admin.ModelAdmin):
     )
     def make_return_borrow(self, request, queryset):
         """
-        Staff can return the borrowed book. This will update the return_date to today
+        Staff can return the borrowed book. This will update the return_date
+        to today's date and set the status to returned for the selected borrow
+        records.
         """
         count = 0
         now = timezone.now()
         for borrow in queryset:
-            if borrow.status not in [borrow.Status.issued, borrow.Status.renewed]:
-                message = f"Borrow id: {borrow.id} could not be renewed due to status: {borrow.get_status_display()}"
+            if borrow.status not in [borrow.Status.issued,
+                                     borrow.Status.renewed]:
+                message = (f"Borrow id: {borrow.id} could not be renewed due" +
+                           f" to status: {borrow.get_status_display()}")
                 self.message_user(request, message, level='warning')
                 return
             borrow.return_date = now
@@ -135,7 +152,8 @@ class BorrowAdmin(admin.ModelAdmin):
             borrow.save()
             count += 1
 
-        self.message_user(request, f"Books returned successfully ({count} record(s)).")
+        self.message_user(request,
+                          f"Books returned successfully ({count} record(s)).")
 
     def has_issue_permission(self, request):
         """

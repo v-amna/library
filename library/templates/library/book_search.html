@@ -5,72 +5,92 @@
 {% load cloudinary %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col">
-        <h1 class="h2">Search Books</h1>
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Search Books</h1>
+        </div>
     </div>
-</div>
 
-<div class="card mb-4">
-    <div class="card-body">
-        <form method="get" class="row g-3">
-            <div class="col-md-9">
-                    <input aria-label="Search by title, author, ISBN, or category" type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search by title, author, ISBN, or category">
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">Search</button>
-            </div>
-        </form>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-9">
+                    <input aria-label="Search by title, author, ISBN, or category"
+                           type="text" name="q" value="{{ q }}"
+                           class="form-control"
+                           placeholder="Search by title, author, ISBN, or category">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-{% if page_obj %}
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for book in page_obj %}
-            <div class="col">
-                <div class="card shadow-sm h-100">
-                    {% cloudinary book.cover_img secure=True format="jpg" alt="Book cover image" class="card image cap" %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ book.book_name }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ book.author.author_name }}</h6>
-                        <p class="card-text">
-                            <strong>Category:</strong> {{ book.category.category_name }}<br>
-                            <strong>ISBN:</strong> {{ book.isbn }}
-                        </p>
-                    </div>
-                    <div class="card-footer bg-transparent border-top-0">
-                        {% if book.id in unavailable_book_ids %}
-                            <button class="btn btn-secondary w-100" disabled>Currently unavailable</button>
-                        {% else %}
-                            <form method="post" action="{% url 'borrow_book' book.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-success w-100">Borrow</button>
-                            </form>
-                        {% endif %}
+    {% if page_obj %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for book in page_obj %}
+                <div class="col">
+                    <div class="card shadow-sm h-100">
+                        {% cloudinary book.cover_img secure=True format="jpg" alt="Book cover image" class="card image cap" %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ book.book_name }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ book.author.author_name }}</h6>
+                            <p class="card-text">
+                                <strong>Category:</strong> {{ book.category.category_name }}<br>
+                                <strong>ISBN:</strong> {{ book.isbn }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            {% if book.id in unavailable_book_ids %}
+                                <button class="btn btn-secondary w-100"
+                                        disabled>Currently unavailable
+                                </button>
+                            {% else %}
+                                <form method="post"
+                                      action="{% url 'borrow_book' book.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-success w-100">
+                                        Borrow
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
-    </div>
-    <nav aria-label="Page navigation books">
-        <ul class="pagination">
-            {% if page_obj.has_previous %}
-            <li class="page-item"> <a class="page-link" href="?page=1">&laquo; first</a> </li>
-            <li class="page-item"> <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a> </li>
-            {% endif %}
+            {% endfor %}
+        </div>
+        <nav aria-label="Page navigation books">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1">&laquo;
+                        first</a></li>
+                    <li class="page-item"><a class="page-link"
+                                             href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    </li>
+                {% endif %}
 
-            <li class="page-item active"> <a href="#" class="page-link">{{ page_obj.number }}</a> </li>
+                <li class="page-item active"><a href="#"
+                                                class="page-link">{{ page_obj.number }}</a>
+                </li>
 
-            {% if page_obj.has_next %}
-            <li class="page-item"> <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a> </li>
-            <li class="page-item"> <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a> </li>
-            {% endif %}
-        </ul>
-    </nav>
-{% else %}
-    <div class="alert alert-info">
-        No books found.
-    </div>
-{% endif %}
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link"
+                                             href="?page={{ page_obj.next_page_number }}">next</a>
+                    </li>
+                    <li class="page-item"><a class="page-link"
+                                             href="?page={{ page_obj.paginator.num_pages }}">last
+                        &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <div class="alert alert-info">
+            No books found.
+        </div>
+    {% endif %}
 
 {% endblock %}

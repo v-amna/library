@@ -4,9 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ("library", "0004_alter_borrow_issued_by_alter_borrow_issued_from_and_more"),
+        ("library",
+         "0004_alter_borrow_issued_by_alter_borrow_issued_from_and_more"),
     ]
 
     operations = [

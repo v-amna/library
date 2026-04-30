@@ -20,12 +20,13 @@ class BorrowForm(ModelForm):
         instance = kwargs.get('instance')
         initial = {}
 
-        # If borrow is open status add, issue_from and return_date
+        # If borrow is open status. Add issue_from and return_date
         # for ease of use
         if instance and instance.status == Borrow.Status.open:
             initial = {
                 'issued_from': timezone.now(),
-                'return_date': timezone.now() + timedelta(days=settings.DEFAULT_BOOK_BORROW_DURATION)
+                'return_date': timezone.now() + timedelta(
+                    days=settings.DEFAULT_BOOK_BORROW_DURATION)
             }
 
         super().__init__(*args, **kwargs, initial=initial)
