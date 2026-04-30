@@ -1,3 +1,7 @@
+"""Forms for the library application.
+
+This module contains forms for managing book borrows and custom user signup.
+"""
 from datetime import timedelta
 from django import forms
 from django.forms import ModelForm
@@ -8,6 +12,7 @@ from .models import Profile, Borrow
 
 
 class BorrowForm(ModelForm):
+    """Form for creating and updating Borrow instances in the admin panel."""
     class Meta:
         model = Borrow
         fields = "__all__"
@@ -17,6 +22,7 @@ class BorrowForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """Initialize the form with default values for open borrows."""
         instance = kwargs.get('instance')
         initial = {}
 
@@ -33,6 +39,7 @@ class BorrowForm(ModelForm):
 
 
 class CustomSignupForm(forms.Form):
+    """Form for custom user signup including profile information."""
     date_of_birth = forms.DateField(
         required=False,
         widget=forms.DateInput(attrs={"type": "date"})
@@ -46,6 +53,7 @@ class CustomSignupForm(forms.Form):
     phone_number = forms.CharField(required=False, max_length=20)
 
     def signup(self, request, user):
+        """Update or create a Profile for the user during signup."""
         Profile.objects.update_or_create(
             user=user,
             defaults={
