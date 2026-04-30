@@ -1,3 +1,6 @@
+"""
+Tests for the library application models and admin interface.
+"""
 from datetime import date, timedelta
 from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User, Permission
@@ -9,7 +12,14 @@ from library.admin import BookAdmin, BorrowAdmin, BookListFilter
 
 
 class ModelTests(TestCase):
+    """
+    Test suite for the models in the library application.
+    """
     def setUp(self):
+        """
+        Set up the test environment by creating a user, author, category,
+        and book.
+        """
         self.user = User.objects.create_user(username='testuser',
                                              password='password')
         self.author = Author.objects.create(author_name='Test Author')
@@ -23,16 +33,28 @@ class ModelTests(TestCase):
         )
 
     def test_profile_str(self):
+        """
+        Test the string representation of the Profile model.
+        """
         profile = Profile.objects.create(user=self.user)
         self.assertEqual(str(profile), 'testuser')
 
     def test_author_str(self):
+        """
+        Test the string representation of the Author model.
+        """
         self.assertEqual(str(self.author), 'Test Author')
 
     def test_category_str(self):
+        """
+        Test the string representation of the Category model.
+        """
         self.assertEqual(str(self.category), 'Test Category')
 
     def test_book_str(self):
+        """
+        Test the string representation and field values of the Book model.
+        """
         self.assertEqual(str(self.book), 'Test Book')
         self.assertEqual(self.book.book_name, 'Test Book')
         self.assertEqual(self.book.author, self.author)
@@ -41,10 +63,16 @@ class ModelTests(TestCase):
         self.assertEqual(self.book.stock, 5)
 
     def test_borrow_str(self):
+        """
+        Test the string representation of the Borrow model.
+        """
         borrow = Borrow.objects.create(user=self.user, book=self.book)
         self.assertEqual(str(borrow), 'testuser -> Test Book')
 
     def test_borrow_manager_is_borrowed_by_user(self):
+        """
+        Test the custom manager method is_borrowed_by_user of the Borrow model.
+        """
         self.assertFalse(
             Borrow.objects.is_borrowed_by_user(self.user, self.book))
         Borrow.objects.create(user=self.user, book=self.book,
@@ -53,6 +81,10 @@ class ModelTests(TestCase):
             Borrow.objects.is_borrowed_by_user(self.user, self.book))
 
     def test_borrow_save_stock_logic(self):
+        """
+        Test the logic for updating book stock when a Borrow record is saved
+        with different statuses.
+        """
         # Test stock decreases when status changes from open to issued
         borrow = Borrow.objects.create(user=self.user, book=self.book,
                                        status=Borrow.Status.open)
@@ -71,7 +103,15 @@ class ModelTests(TestCase):
 
 
 class AdminTests(TestCase):
+    """
+    Test suite for the admin interface customizations in the library
+    application.
+    """
     def setUp(self):
+        """
+        Set up the test environment for admin tests including superuser,
+        books, and RequestFactory.
+        """
         self.site = AdminSite()
         self.user = User.objects.create_superuser(username='admin',
                                                   password='password',
@@ -95,6 +135,9 @@ class AdminTests(TestCase):
         self.factory = RequestFactory()
 
     def test_book_list_filter(self):
+        """
+        Test the BookListFilter custom filter in the Book admin.
+        """
         request = self.factory.get('/')
         request.user = self.user
 
@@ -113,6 +156,10 @@ class AdminTests(TestCase):
         self.assertNotIn(self.book_in_stock, qs)
 
     def test_borrow_admin_actions(self):
+        """
+        Test custom admin actions for the Borrow model: approve, renew,
+        and return.
+        """
         borrow = Borrow.objects.create(user=self.user, book=self.book_in_stock,
                                        status=Borrow.Status.open)
         borrow_admin = BorrowAdmin(Borrow, self.site)
@@ -143,6 +190,9 @@ class AdminTests(TestCase):
         self.assertEqual(borrow.status, Borrow.Status.returned)
 
     def test_borrow_admin_permissions(self):
+        """
+        Test custom permission logic in the BorrowAdmin.
+        """
         borrow_admin = BorrowAdmin(Borrow, self.site)
         regular_user = User.objects.create_user(username='regular',
                                                 password='password')
