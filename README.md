@@ -15,6 +15,13 @@ Overall, the system aims to reduce manual workload, improve record accuracy, and
 
 Admins or staff can manage the library catalog by adding new books, editing existing book details (such as title, author, ISBN, and available copies), and removing books that are no longer in circulation. This ensures the catalog remains accurate and up to date.
 
+While adding a **Book**, users can select existing **Authors** and **Categories**, or optionally create new ones at the same time.
+
+
+- Similarly, when adding an **Author** or **Category**, they can optionally link or create related **Books**.
+
+- This flexible workflow allows users to either reuse existing data or create and associate new records as needed.
+
 ![book_catalog](./screenshort/book/Book_Details_page.png)
 
 ![add_book_details](screenshort/book/book_add_successfull.png)
@@ -43,50 +50,90 @@ Staff can create, update, and delete author records. This ensures proper organiz
 
 ![author_delete_action](screenshort/book/author_delete_action.png)
 
-![author_delete_success](screenshort/book/author_delete_success.png)
+![author_delete_success](screenshort/book/author_delete_sucess.png)
 
 ### Manage Book Categories
 
 Admins can define and manage book categories (e.g., Fiction, Science, Technology), improving organization and making it easier for users to browse books.
 
+![category_page](screenshort/book/category_page.png)
 
-### Manage Users
+![categoty_add](screenshort/book/category_add.png)
 
-Staff can view and manage registered users, including creating new accounts, updating user information, and handling user access. This helps maintain control over who can borrow books and use the system.
+![category_added_sucessfully](screenshort/book/category_added_sucessfully.png)
+
+![category_update](screenshort/book/category_update.png)
+
+![category_updated_successfully](screenshort/book/category_update_successfully.png)
+
+![delete_category](screenshort/book/category_delete.png)
+
+![delete_category_successfully](screenshort/book/category_delete_success.png)
+
+### Manage Staff
+
+Admin can view and manage staff accounts, including creating new staff members, updating their information, and controlling their access permissions. Staff members are responsible for managing books, authors, and categories, as well as handling book issuance, renewal, and returns.
+
+![Staff_Page](screenshort/staff_home.png)
+
+![Add_staff_details](screenshort/staff_add_sucess.png)
+
+![staff_Roles_assigning](screenshort/assign_permission_staff.png)
+
+![staff_delete](screenshort/staff_delete.png)
 
 ### Issue Books to Users
 
 Staff are responsible for issuing books to users. When a book is issued, the system records the issue date and calculates a due date, while also updating the number of available copies.
 
+![staff_approve_user](screenshort/staff_request_approvel.png)
+
+![staff_issued_book](screenshort/staff_filter_issued_book.png)
+
 ### Approve and Handle Returns & Renewals
 
 Staff oversee the return and renewal process. They can confirm when a book is returned (updating availability) and approve renewal requests, extending the borrowing period when applicable.
 
+![staff_return](screenshort/staff_filter_returned_book.png)
+
+![staff_renewed_bboks](screenshort/staff_filter_renewed.png)
+
 ## User Features
+Users can **sign up** and **log in** to access the system.
+
+![User_sighn_up](screenshort/user/signup_page.png)
+
+![user_login](screenshort/user/user_login.png)
 
 ### Browse Available Books
 
 Users can explore the library catalog with a paginated listing of books, making it easy to navigate through large collections efficiently.
 
+![search_book_details](screenshort/user/user_book_page.png)
+
 ### View Book Details
 
 Each book has a detailed view displaying key information such as title, author, ISBN, availability status, and cover image, helping users make informed borrowing decisions.
+
+![search_book_details](screenshort/user/user_book_page.png)
 
 ### Borrow Books
 
 Users can request to borrow available books. Once approved or processed by staff, the book is issued and linked to the user’s account with a defined due date.
 
+![Borrow_book](screenshort/user/user_waiting_approvel.png)
+
 ### Renew Borrowed Books
 
 Users have the option to request a renewal for borrowed books before the due date, allowing them to extend the borrowing period (subject to staff approval or system rules).
 
-### Return Books
-
-Users can return borrowed books through the system. Once processed, the book becomes available again for others.
+![renew_book](screenshort/user/usre_request_renew.png)
 
 ### Track Borrowing History
 
 Users can view their borrowing history, including issued books, due dates, returned items, and current borrowing status. This provides transparency and helps users manage deadlines effectively.
+
+![User_borrow_history](screenshort/user/user_borrows_history.png)
 
 ## Tech Stack
 
@@ -256,7 +303,7 @@ In addition to automated tests, manual testing was performed to validate:
 
 • End-to-end user interactions
 
-## Validators testing
+## Validators testing(to-do)
 **w3c
 
 css
