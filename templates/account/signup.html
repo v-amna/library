@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load static %}
 {% load i18n %}
 {% load widget_tweaks %}
 
@@ -45,6 +46,14 @@
         {% endif %}
         <button class="btn btn-primary" type="submit"> {% trans "Sign Up" %} </button>
       </form>
+
+     <script src="{% static 'js/script.js' %}"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function(event) {
+            let usernameDom = document.getElementById("{{ form.username.id_for_label }}");
+            usernameValidation(usernameDom);
+        });
+    </script>
     </div>
   </div>
 </div>

@@ -1,7 +1,9 @@
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -48,13 +50,11 @@ def book_search(request):
     )
 
 
-"""
-User borrow request for the staff to approve
-"""
-
-
 @login_required
 def borrow_book(request, book_id):
+    """
+    User borrow request for the staff to approve
+    """
     if request.method != "POST":
         return redirect("book_search")
 
@@ -127,3 +127,12 @@ def renew_borrow(request, borrow_id):
 
     messages.success(request, "Renewed for 7 more days.")
     return redirect("my_borrows")
+
+
+def check_username(request):
+    username = request.GET.get("username", None)
+    if not username:
+        return JsonResponse({"available": False, "error": "Username not provided"}, status=400)
+
+    exists = User.objects.filter(username__iexact=username).exists()
+    return JsonResponse({"available": not exists})
