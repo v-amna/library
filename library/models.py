@@ -12,6 +12,9 @@ DEFAULT_BOOK_BORROW_DURATION = settings.DEFAULT_BOOK_BORROW_DURATION
 
 # Create your models here.
 class Profile(models.Model):
+    """
+    Model representing a user profile with additional information.
+    """
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE)
     date_of_birth = models.DateField(null=True, blank=True)
@@ -23,6 +26,7 @@ class Profile(models.Model):
 
 
 class Author(models.Model):
+    """ Model representing a book author. """
     author_name = models.CharField(max_length=120, unique=True)
 
     def __str__(self):
@@ -30,6 +34,7 @@ class Author(models.Model):
 
 
 class Category(models.Model):
+    """ Model representing a book category. """
     category_name = models.CharField(max_length=120, unique=True)
 
     def __str__(self):
@@ -40,6 +45,7 @@ class Category(models.Model):
 
 
 class Book(models.Model):
+    """ Model representing a book in the library. """
     book_name = models.CharField(max_length=200)
     author = models.ForeignKey(Author, on_delete=models.PROTECT,
                                related_name="books")
@@ -59,11 +65,13 @@ class Book(models.Model):
 
 
 class BorrowManager(models.Manager):
+    """ Custom manager for the Borrow model. """
 
     def is_borrowed_by_user(self, user, book):
         """
         Determines if a book is currently borrowed or waiting by a specific
-        user. Any rejected borrows a 30 days old are excluded from the check.
+        user. Any rejected borrows and 30 days old by the same user are
+        excluded from the check.
         """
 
         return super().get_queryset().filter(
@@ -76,6 +84,7 @@ class BorrowManager(models.Manager):
 
 
 class Borrow(models.Model):
+    """ Model representing a book borrow transaction. """
     class Meta:
         permissions = [
             ("issue_borrow", "can borrow the book to a user"),
@@ -85,6 +94,7 @@ class Borrow(models.Model):
         ]
 
     class Status(models.TextChoices):
+        """ Enum-like class for borrow statuses. """
         open = "OP", "Awaiting Issuance"
         issued = "IS", "Issued"
         renewed = "RE", "Renewed"

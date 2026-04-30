@@ -13,6 +13,9 @@ from .models import Book, Borrow
 
 @login_required
 def book_search(request):
+    """
+    View for searching books with pagination.
+    """
     q = request.GET.get("q", "").strip()
 
     books = Book.objects.filter(is_active=True).select_related(
@@ -94,6 +97,9 @@ def borrow_book(request, book_id):
 
 @login_required
 def my_borrows(request):
+    """
+    View to display the current user's borrow history.
+    """
     borrows = (
         Borrow.objects.filter(user=request.user)
         .select_related("book", "book__author")
@@ -117,6 +123,9 @@ def my_borrows(request):
 
 @login_required
 def renew_borrow(request, borrow_id):
+    """
+    View for users to request a renewal of their book borrow.
+    """
     if request.method != "POST":
         return redirect("my_borrows")
 
@@ -143,6 +152,9 @@ def renew_borrow(request, borrow_id):
 
 
 def check_username(request):
+    """
+    AJAX view to check if a username is already taken.
+    """
     username = request.GET.get("username", None)
     if not username:
         return JsonResponse(
