@@ -6,9 +6,10 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from datetime import timedelta
 
 from config import settings
-from .models import Book, Borrow
+from .models import Book, Borrow, DEFAULT_BOOK_BORROW_DURATION
 
 
 def home_page(request):
@@ -169,29 +170,42 @@ def cancel_borrow(request, borrow_id):
 def renew_borrow(request, borrow_id):
     """
     View for users to request a renewal of their book borrow.
+
+    A user can only renew a borrow that is not overdue for once, then later
+    user needs to approach the staff to renew the book.
+
+    The renewal period is fixed on the settings as constant.
     """
     if request.method != "POST":
         return redirect("my_borrows")
 
     borrow = get_object_or_404(Borrow, id=borrow_id,
                                user=request.user)
-    today = timezone.localdate()
-
-    if borrow.return_date < today:
-        messages.error(request,
-                       "Overdue books cannot be renewed " +
-                       "from this page.")
-        return redirect("my_borrows")
-
-    if "renewed_once" in (borrow.notes or ""):
+    if borrow.status == Borrow.Status.renewed:
         messages.warning(request,
-                         "This borrow has already been renewed once.")
+                         ("This borrow has already been renewed once." +
+                          " Please contact the staff."))
         return redirect("my_borrows")
 
-    # TODO: Fix this logic
-    borrow.save(update_fields=["return_date", "notes"])
+    # If status is not issued, then the book cannot be renewed by staff.
+    if borrow.status != Borrow.Status.issued:
+        messages.error(request,
+                       "This book cannot be renewed" +
+                       "Please contact the staff.")
+        return redirect("my_borrows")
 
-    messages.success(request, "Renewed for 7 more days.")
+    now = timezone.now()
+    borrow.return_date = now + timedelta(
+        days=DEFAULT_BOOK_BORROW_DURATION)
+
+    borrow.status = borrow.Status.renewed
+    borrow.notes += (", " if borrow.notes else "") + (
+        f"renewed on: {now} by {request.user}(user)")
+
+    borrow.save()
+
+    messages.success(request,
+                     f"Renewed for {DEFAULT_BOOK_BORROW_DURATION} more days.")
     return redirect("my_borrows")
 
 
