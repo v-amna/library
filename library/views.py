@@ -138,6 +138,34 @@ def my_borrows(request):
 
 
 @login_required
+def cancel_borrow(request, borrow_id):
+    """
+    View for users to cancel their book borrow. Before approval, users can
+    cancel their borrow request. After approval, users can only return the
+    book.
+    """
+    if request.method != "POST":
+        return redirect("my_borrows")
+    borrow = get_object_or_404(Borrow, id=borrow_id,
+                               user=request.user)
+
+    if borrow.status != Borrow.Status.open:
+        messages.error(request,
+                       "Cannot cancel a borrow that is not pending.")
+        return redirect("my_borrows")
+
+    deleted_count, _ = borrow.delete()
+    if deleted_count > 0:
+        messages.success(request,
+                         ("Cancelled the borrow request of " +
+                          f"'{borrow.book.book_name}'."))
+    else:
+        messages.error(request,
+                       "Failed to delete. Please contact admin.")
+    return redirect("my_borrows")
+
+
+@login_required
 def renew_borrow(request, borrow_id):
     """
     View for users to request a renewal of their book borrow.
