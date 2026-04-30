@@ -11,6 +11,22 @@ from config import settings
 from .models import Book, Borrow
 
 
+def home_page(request):
+    """
+    View for home page with the latest 4 active books.
+    """
+
+    books = Book.objects.filter(is_active=True).order_by("-created_at")[:4]
+
+    return render(
+        request,
+        "home.html",
+        {
+            "books": books
+        }
+    )
+
+
 @login_required
 def book_search(request):
     """
