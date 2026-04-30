@@ -25,10 +25,10 @@
         {%  for book in books %}
         <div class="card col-sm-4">
             <div class="row g-0">
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-6">
                     {% cloudinary book.cover_img secure=True format="jpg" loading="lazy" alt="Book cover image" class="img-fluid rounded-start" %}
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8 col-sm-6">
                     <div class="card-body">
                         <h5 class="card-title">{{ book.book_name | truncatechars:50 }}</h5>
                         <p class="card-text"> {{ book.description | truncatechars:300 }}</p>
